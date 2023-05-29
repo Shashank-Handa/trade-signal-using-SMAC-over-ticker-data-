@@ -1,0 +1,1 @@
+# trade-signal-using-SMAC-over-ticker-data-
