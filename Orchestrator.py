@@ -4,10 +4,12 @@ import pymysql
 import SMAC
 import matplotlib.pyplot as plt
 
+
+
 connection = pymysql.connect(
             host='localhost',
             user='root',
-            password='H@rd.Study123$',
+            password='####',
             database='stockdata'
         )
 myInserter = DBInput.DBInserter()
