@@ -1,5 +1,5 @@
 import datetime
-
+import matplotlib.pyplot as plt
 import pandas
 import pymysql
 
@@ -17,8 +17,14 @@ class SMACpredictor:
     def setBatchSize(self, batchSize):
         self.batchSize = batchSize
 
-    def twoTimeFrameCrossoverPredictor(self, instrumentName, timeFrame1, timeFrame2, startDateAndTime="2000-01-01 00:00:00"):
+    def twoTimeFrameCrossoverPredictor(self, instrumentName, timeFrame1, timeFrame2, startDateAndTime="2000-01-01 00:00:00", showPlot=False):
         returnVal=[]
+        if(timeFrame1<timeFrame2):
+            timeFrameLong = timeFrame2
+            timeFrameShort = timeFrame1
+        else:
+            timeFrameLong = timeFrame1
+            timeFrameShort = timeFrame2
         if(self.dbConnection):
             batchNumber = 0
             while(True):
@@ -27,17 +33,30 @@ class SMACpredictor:
                     sql = "SELECT dateAndTime, closePrice FROM tickerdata WHERE instrument=%s AND dateAndTime > %s LIMIT %s, 1000"
                     cur.execute(sql, (instrumentName, startDateAndTime, batchNumber*self.batchSize))
                     df = pandas.DataFrame(cur.fetchall(), columns=["dateAndTime", "closingPrice"])
-                slowSMA = df.rolling(timeFrame1, on="dateAndTime").mean()
-                fastSMA = df.rolling(timeFrame2, on="dateAndTime").mean()
-                crossoverpoints = pandas.merge(slowSMA, fastSMA)
-                for row in crossoverpoints.iterrows():
-                    trend = fastSMA[(fastSMA==row).shift(-1)]
-                    if(trend["closingPrice"]>row["closingPrice"]):
-                        returnVal.append(str(row) + "buy")
+                slowSMA = df.rolling(timeFrameLong, on="dateAndTime").mean().dropna()
+                fastSMA = df.rolling(timeFrameShort, on="dateAndTime").mean().dropna()
+
+
+
+                combinedDf = pandas.merge(slowSMA, fastSMA, on="dateAndTime")
+                flag=-1
+                for row in combinedDf.iterrows():
+                    if row[1]["closingPrice_x"]<row[1]["closingPrice_y"] and flag!=0:
+                        flag=0
+                        returnVal.append(str(row[1]) + " \nBUY\n")
+                    elif row[1]["closingPrice_x"]>row[1]["closingPrice_y"] and flag!=1:
+                        flag=1
+                        returnVal.append(str(row[1]) + " \nSELL\n")
                     else:
-                        returnVal.append(str(row) + "sell")
+                        pass
+
                 if(len(df.index)<self.batchSize):
                     break
+        if(showPlot):
+            ax=plt.gca()
+            combinedDf.plot(kind='line',x="dateAndTime", y="closingPrice_y", color="red", ax=ax)
+            combinedDf.plot(kind='line',x="dateAndTime", y="closingPrice_x", color="blue", ax=ax)
+            plt.show()
         return returnVal
 
 

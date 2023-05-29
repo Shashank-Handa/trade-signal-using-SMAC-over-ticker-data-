@@ -2,6 +2,7 @@ import openpyxl
 import DBInput
 import pymysql
 import SMAC
+import matplotlib.pyplot as plt
 
 connection = pymysql.connect(
             host='localhost',
@@ -15,14 +16,15 @@ myInserter.setConnection(connection)
 wb = openpyxl.load_workbook("resources/HINDALCO_1D.xlsx")
 ws = wb.active
 
-#for row in ws.iter_rows(min_row=2, max_row=70, values_only=True):
-#    myInserter.insertTicker(*row)
+for row in ws.iter_rows(min_row=2, max_row=70, values_only=True):
+    myInserter.insertTicker(*row)
 
 myPredictor = SMAC.SMACpredictor()
 myPredictor.setConnection(connection)
 
-result = myPredictor.twoTimeFrameCrossoverPredictor(5, 30)
-print(result)
+result = myPredictor.twoTimeFrameCrossoverPredictor("HINDALCO", 1, 25, showPlot=True)
+for i in result:
+    print(i)
 
 
 
