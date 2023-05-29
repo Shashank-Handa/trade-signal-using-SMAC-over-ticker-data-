@@ -6,8 +6,8 @@ download the package and unzip. If necessary place new tickerSymbolData in resou
 
 ## Output
 Graph output<br>
-![image of graph with short window size 5 and long window size 100](http://url/to/img.png)<br>
+![image of graph with short window size 5 and long window size 100]([http://url/to/img.png)](https://github.com/Shashank-Handa/trade-signal-using-SMAC-over-ticker-data-/blob/master/output1.PNG)<br>
 Trade signals<br>
-![image of trade signal outputs to console](http://url)<br>
+![image of trade signal outputs to console](https://github.com/Shashank-Handa/trade-signal-using-SMAC-over-ticker-data-/blob/master/output2.PNG)<br>
 DB state<br>
-![image of database state](http://url)<br>
+![image of database state](https://github.com/Shashank-Handa/trade-signal-using-SMAC-over-ticker-data-/blob/master/output3.PNG)<br>
